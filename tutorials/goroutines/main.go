@@ -26,17 +26,38 @@ func workerTwo(wg *sync.WaitGroup) {
 	}
 }
 
+// func main() {
+// 	var wg sync.WaitGroup
+// 	start := time.Now()
+
+// 	wg.Add(1) // add one goroutine to wait for
+// 	go workerOne(&wg)
+
+// 	wg.Add(1) // add one goroutine to wait for
+// 	go workerTwo(&wg)
+
+// 	wg.Wait() // wait for all goroutines
+// 	elapsed := time.Since(start).Seconds()
+// 	fmt.Printf("All workers done in %.2f seconds\n", elapsed)
+// }
+
+func channelOne(channel chan int) {
+	fmt.Println("Channel One sent info...")
+	channel <- 1
+	fmt.Println("Channel Info sent succesfully")
+}
+
+func channelTwo(channel chan int) {
+	val := <-channel
+	fmt.Println("Channel Two received:", val)
+}
+
 func main() {
-	var wg sync.WaitGroup
-	start := time.Now()
+	channel := make(chan int)
 
-	wg.Add(1) // add one goroutine to wait for
-	go workerOne(&wg)
+	go channelOne(channel)
+	go channelTwo(channel)
 
-	wg.Add(1) // add one goroutine to wait for
-	go workerTwo(&wg)
-
-	wg.Wait() // wait for all goroutines
-	elapsed := time.Since(start).Seconds()
-	fmt.Printf("All workers done in %.2f seconds\n", elapsed)
+	// Wait for goroutines to finish (for demo)
+	time.Sleep(1 * time.Second)
 }
